@@ -8,15 +8,57 @@
 import SwiftUI
 
 struct HabitView: View {
-    let viewModel: HabitsViewModel = HabitsViewModel()
+    @State private var viewModel = HabitsViewModel()
+    
+    @State private var isAdding: Bool = false
+    @State private var newHabitTitle: String = ""
+    
     var body: some View {
-        List {
-            ForEach(viewModel.habits) { habit in
-                HabitRowView(habit: habit) {
-                    viewModel.toggle(habit)
+        NavigationStack {
+            Group {
+                if isAdding {
+                    addHabitInputView
+                }
+                if viewModel.habits.isEmpty {
+                    ContentUnavailableView("No Habits", systemImage: "list.bullet", description: Text("Tap + to add your first habit"))
+                }
+                else {
+                    List {
+                        ForEach(viewModel.habits) { habit in
+                            HabitRowView(habit: habit) {
+                                viewModel.toggle(habit)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Habits")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isAdding.toggle()
+                    } label: {
+                        Image(systemName: "plus")
+                    }
                 }
             }
         }
+    }
+    
+    private var addHabitInputView: some View {
+        HStack {
+            TextField("Enter habit title", text: $newHabitTitle)
+                .textFieldStyle(.roundedBorder)
+
+            Button("Add") {
+                viewModel.addHabit(title: newHabitTitle)
+                newHabitTitle = ""
+                isAdding = false
+            }
+            .disabled(newHabitTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+        }
+        .padding()
+        .background(.ultraThinMaterial)
     }
 }
 
