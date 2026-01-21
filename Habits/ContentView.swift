@@ -9,7 +9,19 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        HabitView()
+        TabView {
+            Tab("Habits", systemImage: "repeat.circle.fill") {
+                HabitView()
+            }
+            
+            Tab("Dashboard", systemImage: "chart.bar.xaxis.ascending") {
+                
+            }
+            
+            Tab("Settings", systemImage: "gearshape.fill") {
+                
+            }
+        }
     }
 }
 
