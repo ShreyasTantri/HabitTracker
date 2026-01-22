@@ -13,6 +13,14 @@ import SwiftUI
 final class HabitsViewModel {
     
     var habits : [Habit] = []
+    
+    var totalHabits: Int {
+        habits.count
+    }
+    
+    var completedHabits: Int {
+        habits.filter { $0.isCompleted }.count
+    }
 
     func toggle(_ habit: Habit) {
         guard let index = habits.firstIndex(where: { $0.id == habit.id }) else {

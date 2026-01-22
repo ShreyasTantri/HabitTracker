@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HabitView: View {
-    @State private var viewModel = HabitsViewModel()
+    var viewModel: HabitsViewModel
     
     @State private var isAdding: Bool = false
     @State private var newHabitTitle: String = ""
@@ -18,11 +18,9 @@ struct HabitView: View {
             Group {
                 if isAdding {
                     addHabitInputView
-                }
-                if viewModel.habits.isEmpty {
+                } else if viewModel.habits.isEmpty {
                     ContentUnavailableView("No Habits", systemImage: "list.bullet", description: Text("Tap + to add your first habit"))
-                }
-                else {
+                } else {
                     List {
                         ForEach(viewModel.habits) { habit in
                             HabitRowView(habit: habit) {
@@ -63,7 +61,7 @@ struct HabitView: View {
 }
 
 #Preview {
-    HabitView()
+    HabitView(viewModel: HabitsViewModel())
 }
 
 
