@@ -35,14 +35,3 @@ final class HabitsViewModel {
         habits.append(newHabit)
     }
 }
-
-
-
-/*
- Changes - previously this was hardcoded
-var habits : [Habit] = [
-    Habit(id: UUID(), title: "Drink Water Daily", description: "3 Liters a day should help you", isCompleted: false),
-    Habit(id: UUID(), title: "Exercise Regularly", description: "30 minutes a day is enough", isCompleted: false),
-    Habit(id: UUID(), title: "Read Daily", description: "1 Book a week is a good goal", isCompleted: true)
-]
-*/

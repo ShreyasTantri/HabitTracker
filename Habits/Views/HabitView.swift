@@ -44,33 +44,27 @@ struct HabitView: View {
     }
     
     private var addHabitInputView: some View {
-        HStack {
-            TextField("Enter habit title", text: $newHabitTitle)
-                .textFieldStyle(.roundedBorder)
-
-            Button("Add") {
-                viewModel.addHabit(title: newHabitTitle)
-                newHabitTitle = ""
-                isAdding = false
+            HStack {
+                TextField("Enter habit title", text: $newHabitTitle)
+                    .textFieldStyle(.roundedBorder)
+                
+                Button("Add") {
+                    viewModel.addHabit(title: newHabitTitle)
+                    newHabitTitle = ""
+                    isAdding = false
+                }
+                .disabled(newHabitTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+                
+                Button("", systemImage: "xmark"){
+                    isAdding.toggle()
+                }
             }
-            .disabled(newHabitTitle.trimmingCharacters(in: .whitespaces).isEmpty)
+            .padding()
+            .background(.ultraThinMaterial)
         }
-        .padding()
-        .background(.ultraThinMaterial)
-    }
+    
 }
 
 #Preview {
     HabitView(viewModel: HabitsViewModel())
 }
-
-
-/*
-
- App
-  └── ContentView
-       └── HabitView
-            └── List
-                 └── HabitRowView (many)
- 
- */
