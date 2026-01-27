@@ -8,11 +8,25 @@
 import Foundation
 import SwiftUI
 
+enum HabitViewState {
+    case list
+    case empty
+}
+
 @Observable
 @MainActor
 final class HabitsViewModel {
+    private let habitsKey = "habits_key"
     
-    var habits : [Habit] = []
+    var habits : [Habit] = [] {
+        didSet {
+            saveHabits()
+        }
+    }
+    
+    init() {
+        loadHabits()
+    }
     
     var totalHabits: Int {
         habits.count
@@ -20,6 +34,10 @@ final class HabitsViewModel {
     
     var completedHabits: Int {
         habits.filter { $0.isCompleted }.count
+    }
+    
+    var viewState: HabitViewState {
+        habits.isEmpty ? .empty : .list
     }
 
     func toggle(_ habit: Habit) {
@@ -29,9 +47,24 @@ final class HabitsViewModel {
         habits[index].isCompleted.toggle()
     }
     
-    func addHabit(title: String) {
-        let newHabit = Habit(id: UUID(), title: title, description: nil, isCompleted: false)
-        
-        habits.append(newHabit)
+    func addHabit(habit: Habit) {
+        habits.append(habit)
+    }
+    
+    // Save
+    func saveHabits() {
+        guard let data = try? JSONEncoder().encode(habits) else {
+            return
+        }
+        UserDefaults.standard.set(data, forKey: habitsKey)
+    }
+    
+    // Load
+    func loadHabits() {
+        guard let data = UserDefaults.standard.data(forKey: habitsKey),
+              let decoded = try? JSONDecoder().decode([Habit].self, from: data) else {
+            return
+        }
+        habits = decoded
     }
 }

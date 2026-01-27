@@ -9,60 +9,57 @@ import SwiftUI
 
 struct HabitView: View {
     var viewModel: HabitsViewModel
-    
-    @State private var isAdding: Bool = false
-    @State private var newHabitTitle: String = ""
-    
+    @State private var isShowingAddSheet = false
+
     var body: some View {
         NavigationStack {
-            Group {
-                if isAdding {
-                    addHabitInputView
-                } else if viewModel.habits.isEmpty {
-                    ContentUnavailableView("No Habits", systemImage: "list.bullet", description: Text("Tap + to add your first habit"))
-                } else {
-                    List {
-                        ForEach(viewModel.habits) { habit in
-                            HabitRowView(habit: habit) {
-                                viewModel.toggle(habit)
-                            }
-                        }
-                    }
-                }
-            }
+            content
             .navigationTitle("Habits")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        isAdding.toggle()
+                        isShowingAddSheet = true
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
-        }
-    }
-    
-    private var addHabitInputView: some View {
-            HStack {
-                TextField("Enter habit title", text: $newHabitTitle)
-                    .textFieldStyle(.roundedBorder)
-                
-                Button("Add") {
-                    viewModel.addHabit(title: newHabitTitle)
-                    newHabitTitle = ""
-                    isAdding = false
-                }
-                .disabled(newHabitTitle.trimmingCharacters(in: .whitespaces).isEmpty)
-                
-                Button("", systemImage: "xmark"){
-                    isAdding.toggle()
+            .sheet(isPresented: $isShowingAddSheet) {
+                AddHabitView { habit in
+                    viewModel.addHabit(habit: habit)
                 }
             }
-            .padding()
-            .background(.ultraThinMaterial)
         }
-    
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.viewState {
+        case .list:
+            List {
+                ForEach(viewModel.habits) { habit in
+                    HabitRowView(habit: habit)
+                    .swipeActions(edge: .trailing) {
+                        Button {
+                            viewModel.toggle(habit)
+                        } label: {
+                            Label(
+                                habit.isCompleted ? "Undo" : "Complete",
+                                systemImage: habit.isCompleted ? "arrow.uturn.left" : "checkmark"
+                            )
+                        }
+                        .tint(habit.isCompleted ? .orange : .green)
+                    }
+                }
+            }
+        case .empty:
+            ContentUnavailableView(
+                "No Habits",
+                systemImage: "list.bullet",
+                description: Text("Tap + to add your first habit")
+            )
+        }
+    }
 }
 
 #Preview {
